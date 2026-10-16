@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio GitHub</title>
-  <meta name="description" content="Portfolio developer yang menampilkan profil dan proyek dari GitHub." />
+  <title>Portfolio</title>
+  <meta name="description" content="Portfolio proyek web, IoT, dan keamanan." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -12,9 +12,9 @@
 </head>
 <body>
   <header class="nav">
-    <a href="#home" class="logo" id="navLogo">&lt;dev/&gt;</a>
+    <a href="#home" class="logo">&lt;dev/&gt;</a>
     <nav>
-      <a href="#about">Tentang</a>
+      <a href="#skills">Skill</a>
       <a href="#projects">Proyek</a>
       <a href="#contact">Kontak</a>
       <button id="themeToggle" class="icon-btn" aria-label="Ganti tema">🌙</button>
@@ -22,82 +22,41 @@
   </header>
 
   <main>
-    <!-- HERO -->
     <section id="home" class="hero">
       <p class="hello">Halo, saya</p>
-      <h1 id="name">Memuat...</h1>
+      <h1 id="name"></h1>
       <p id="bio" class="bio"></p>
-      <div class="meta">
-        <span id="location"></span>
-        <span id="company"></span>
-      </div>
       <div class="cta">
-        <a id="githubLink" class="btn primary" href="#" target="_blank" rel="noopener">Lihat GitHub</a>
-        <a class="btn" href="#projects">Lihat Proyek</a>
+        <a class="btn primary" href="#projects">Lihat Proyek</a>
+        <a id="githubLink" class="btn" href="#" target="_blank" rel="noopener" hidden>GitHub</a>
       </div>
     </section>
 
-    <!-- STATS -->
-    <section id="about" class="stats">
-      <div class="stat"><strong id="statRepos">0</strong><span>Repositori</span></div>
-      <div class="stat"><strong id="statStars">0</strong><span>Total Bintang</span></div>
-      <div class="stat"><strong id="statFollowers">0</strong><span>Pengikut</span></div>
-      <div class="stat"><strong id="statSince">-</strong><span>Bergabung</span></div>
+    <section class="stats">
+      <div class="stat"><strong id="statProjects">0</strong><span>Proyek</span></div>
+      <div class="stat"><strong id="statCats">0</strong><span>Kategori</span></div>
+      <div class="stat"><strong id="statTech">0</strong><span>Teknologi</span></div>
     </section>
 
-    <!-- FEATURED -->
-    <section id="featured" class="section">
-      <h2>Proyek Unggulan</h2>
-      <div class="featured-grid">
-        <article class="feature">
-          <div class="icon">🅿️</div>
-          <h3>IoT Smart Parking</h3>
-          <p>Sistem parkir pintar berbasis IoT yang memantau ketersediaan slot parkir secara otomatis dan menampilkan statusnya secara real-time.</p>
-          <div class="topics"><span>IoT</span><span>Smart City</span><span>Real-time</span></div>
-        </article>
-        <article class="feature">
-          <div class="icon">🛒</div>
-          <h3>Web E-Commerce</h3>
-          <p>Website toko online lengkap dengan katalog produk, keranjang belanja, dan alur pemesanan untuk mendukung penjualan secara digital.</p>
-          <div class="topics"><span>Web</span><span>E-Commerce</span><span>Full-stack</span></div>
-        </article>
-        <article class="feature">
-          <div class="icon">🐞</div>
-          <h3>Bug Hunting</h3>
-          <p>Mencari dan melaporkan celah keamanan serta bug pada aplikasi web secara bertanggung jawab untuk membantu meningkatkan keamanannya.</p>
-          <div class="topics"><span>Keamanan Web</span><span>Bug Hunting</span><span>Pentest</span></div>
-        </article>
-      </div>
+    <section id="skills" class="section">
+      <h2>Skill &amp; Teknologi</h2>
+      <div id="skillList" class="chips"></div>
     </section>
 
-    <!-- LANGUAGES -->
-    <section class="section">
-      <h2>Bahasa yang sering dipakai</h2>
-      <div id="langBar" class="lang-bar"></div>
-      <div id="langLegend" class="lang-legend"></div>
-    </section>
-
-    <!-- PROJECTS -->
     <section id="projects" class="section">
       <h2>Proyek</h2>
       <div class="toolbar">
-        <input id="search" type="search" placeholder="Cari repositori..." />
-        <select id="langFilter"><option value="">Semua bahasa</option></select>
-        <select id="sort">
-          <option value="updated">Terbaru diperbarui</option>
-          <option value="stars">Bintang terbanyak</option>
-          <option value="name">Nama (A-Z)</option>
-        </select>
+        <input id="search" type="search" placeholder="Cari proyek..." />
+        <div id="filters" class="filters"></div>
       </div>
-      <div id="repoGrid" class="grid"></div>
-      <p id="empty" class="empty" hidden>Tidak ada repositori yang cocok.</p>
+      <div id="projectGrid" class="grid"></div>
+      <p id="empty" class="empty" hidden>Tidak ada proyek yang cocok.</p>
     </section>
 
-    <!-- CONTACT -->
     <section id="contact" class="section contact">
       <h2>Mari terhubung</h2>
-      <p>Tertarik berkolaborasi atau punya pertanyaan? Hubungi saya lewat GitHub.</p>
-      <a id="contactLink" class="btn primary" href="#" target="_blank" rel="noopener">Kirim pesan di GitHub</a>
+      <p>Tertarik berkolaborasi atau punya pertanyaan? Hubungi saya.</p>
+      <a id="contactLink" class="btn primary" href="#" target="_blank" rel="noopener" hidden>Hubungi saya</a>
     </section>
   </main>
 
