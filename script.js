@@ -8,7 +8,6 @@ const CONFIG = {
 
 const SKILLS = ["PHP", "JavaScript", "CSS", "Python", "HTML", "Arduino", "ESP32"];
 
-/* Tambah / ubah proyek di sini. link & demo boleh dikosongkan. */
 const PROJECTS = [
   {
     title: "Web Tahun Baru",
