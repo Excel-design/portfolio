@@ -1,24 +1,77 @@
-/* =====================================================
-   KONFIGURASI: ganti dengan username GitHub kamu
-   (atau buka halaman dengan ?user=usernamekamu)
-   ===================================================== */
-const GITHUB_USERNAME = "octocat";
 
-const params = new URLSearchParams(location.search);
-const USERNAME = params.get("user") || GITHUB_USERNAME;
-const API = "https://api.github.com";
-
-const LANG_COLORS = {
-  JavaScript: "#f1e05a", TypeScript: "#3178c6", Python: "#3572a5", HTML: "#e34c26",
-  CSS: "#563d7c", PHP: "#4f5d95", Java: "#b07219", "C++": "#f34b7d", C: "#555555",
-  "C#": "#178600", Go: "#00add8", Rust: "#dea584", Dart: "#00b4ab", Kotlin: "#a97bff",
-  Swift: "#f05138", Vue: "#41b883", Shell: "#89e051", Ruby: "#701516",
-  "Jupyter Notebook": "#da5b0b", Blade: "#f7523f", SCSS: "#c6538c"
+const CONFIG = {
+  name: "Excel Darizq S",
+  bio: "Membuat website, proyek IoT, dan mencari bug web/app.",
+  github: "",                                
+  contact: ""                                
 };
-const colorOf = (l) => LANG_COLORS[l] || "#8b93a7";
 
+const SKILLS = ["PHP", "JavaScript", "CSS", "Python", "HTML", "Arduino", "ESP32"];
+
+/* Tambah / ubah proyek di sini. link & demo boleh dikosongkan. */
+const PROJECTS = [
+  {
+    title: "Web Tahun Baru",
+    category: "Web",
+    icon: "🎆",
+    desc: "Website bertema perayaan tahun baru dengan tampilan interaktif dan animasi yang meriah.",
+    tags: ["HTML", "CSS", "JavaScript"],
+    link: "", demo: ""
+  },
+  {
+    title: "Web Bucin",
+    category: "Web",
+    icon: "💕",
+    desc: "Website romantis untuk mengungkapkan perasaan kepada pasangan, dengan desain manis dan efek interaktif.",
+    tags: ["HTML", "CSS", "JavaScript"],
+    link: "", demo: ""
+  },
+  {
+    title: "Web E-Commerce",
+    category: "Web",
+    icon: "🛒",
+    desc: "Website toko online dengan katalog produk, keranjang belanja, dan alur pemesanan.",
+    tags: ["PHP", "JavaScript", "CSS"],
+    link: "", demo: ""
+  },
+  {
+    title: "IoT Smart Parking",
+    category: "IoT",
+    icon: "🅿️",
+    desc: "Sistem parkir pintar berbasis ESP32 yang memantau ketersediaan slot parkir secara otomatis.",
+    tags: ["ESP32", "IoT", "Sensor"],
+    link: "", demo: ""
+  },
+  {
+    title: "Tempat Sampah Pintar",
+    category: "IoT",
+    icon: "🗑️",
+    desc: "Tempat sampah otomatis berbasis mikrokontroler yang bekerja dengan sensor.",
+    tags: ["IoT", "Sensor", "Mikrokontroler"],
+    link: "", demo: ""
+  },
+  {
+    title: "Mobil Remote Arduino",
+    category: "IoT",
+    icon: "🚗",
+    desc: "Mobil yang dapat dikendalikan dari jarak jauh menggunakan Arduino.",
+    tags: ["Arduino", "Elektronika", "Remote"],
+    link: "", demo: ""
+  },
+  {
+    title: "Bug Hunting",
+    category: "Keamanan",
+    icon: "🐞",
+    desc: "Mencari dan melaporkan celah keamanan serta bug pada aplikasi web secara bertanggung jawab.",
+    tags: ["Keamanan Web", "Bug Hunting"],
+    link: "", demo: ""
+  }
+];
+
+/* ---------- Helper ---------- */
 const $ = (id) => document.getElementById(id);
-let repos = [];
+const esc = (s = "") => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let activeCat = "";
 
 /* ---------- Tema ---------- */
 function setTheme(t) {
@@ -35,117 +88,69 @@ $("themeToggle").addEventListener("click", () => {
   setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
 });
 
-/* ---------- Helper ---------- */
-const esc = (s = "") => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const fmtDate = (d) => new Date(d).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
-
-async function getJSON(url) {
-  const res = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
-  if (res.status === 404) throw new Error("Username GitHub tidak ditemukan.");
-  if (res.status === 403) throw new Error("Batas request GitHub API tercapai. Coba lagi nanti.");
-  if (!res.ok) throw new Error("Gagal mengambil data dari GitHub.");
-  return res.json();
-}
-
 /* ---------- Profil ---------- */
-function renderProfile(u) {
-  const name = u.name || u.login;
-  document.title = `${name} | Portfolio`;
-  $("name").textContent = name;
-  $("bio").textContent = u.bio || "Developer yang suka membangun hal-hal keren.";
-  $("location").textContent = u.location ? "📍 " + u.location : "";
-  $("company").textContent = u.company ? "🏢 " + u.company : "";
-  $("githubLink").href = u.html_url;
-  $("contactLink").href = u.blog && /^https?:/.test(u.blog) ? u.blog : u.html_url;
-  $("footerName").textContent = name;
-  $("statRepos").textContent = u.public_repos;
-  $("statFollowers").textContent = u.followers;
-  $("statSince").textContent = new Date(u.created_at).getFullYear();
+function renderProfile() {
+  document.title = `${CONFIG.name} | Portfolio`;
+  $("name").textContent = CONFIG.name;
+  $("bio").textContent = CONFIG.bio;
+  $("footerName").textContent = CONFIG.name;
+  $("year").textContent = new Date().getFullYear();
+
+  if (CONFIG.github) {
+    $("githubLink").href = CONFIG.github;
+    $("githubLink").hidden = false;
+  }
+  const contact = CONFIG.contact || CONFIG.github;
+  if (contact) {
+    $("contactLink").href = contact;
+    $("contactLink").hidden = false;
+  }
+
+  const cats = [...new Set(PROJECTS.map((p) => p.category))];
+  $("statProjects").textContent = PROJECTS.length;
+  $("statCats").textContent = cats.length;
+  $("statTech").textContent = SKILLS.length;
+
+  $("skillList").innerHTML = SKILLS.map((s) => `<span class="chip">${esc(s)}</span>`).join("");
+
+  $("filters").innerHTML = ["Semua", ...cats]
+    .map((c) => `<button class="filter${c === "Semua" ? " active" : ""}" data-cat="${c === "Semua" ? "" : esc(c)}">${esc(c)}</button>`)
+    .join("");
+  $("filters").addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter");
+    if (!btn) return;
+    activeCat = btn.dataset.cat;
+    document.querySelectorAll(".filter").forEach((b) => b.classList.toggle("active", b === btn));
+    renderProjects();
+  });
 }
 
-/* ---------- Bahasa ---------- */
-function renderLanguages() {
-  const count = {};
-  repos.forEach((r) => { if (r.language) count[r.language] = (count[r.language] || 0) + 1; });
-  const entries = Object.entries(count).sort((a, b) => b[1] - a[1]);
-  const total = entries.reduce((s, [, n]) => s + n, 0) || 1;
-
-  $("langBar").innerHTML = entries
-    .map(([l, n]) => `<span title="${esc(l)}" style="width:${(n / total) * 100}%;background:${colorOf(l)}"></span>`)
-    .join("");
-  $("langLegend").innerHTML = entries
-    .map(([l, n]) => `<span><i style="background:${colorOf(l)}"></i>${esc(l)} ${Math.round((n / total) * 100)}%</span>`)
-    .join("");
-
-  $("langFilter").innerHTML =
-    `<option value="">Semua bahasa</option>` +
-    entries.map(([l]) => `<option value="${esc(l)}">${esc(l)}</option>`).join("");
-}
-
-/* ---------- Repo ---------- */
-function renderRepos() {
+/* ---------- Proyek ---------- */
+function renderProjects() {
   const q = $("search").value.trim().toLowerCase();
-  const lang = $("langFilter").value;
-  const sort = $("sort").value;
-
-  let list = repos.filter((r) =>
-    (!lang || r.language === lang) &&
-    (!q || r.name.toLowerCase().includes(q) || (r.description || "").toLowerCase().includes(q))
-  );
-
-  list.sort((a, b) =>
-    sort === "stars" ? b.stargazers_count - a.stargazers_count
-    : sort === "name" ? a.name.localeCompare(b.name)
-    : new Date(b.pushed_at) - new Date(a.pushed_at)
+  const list = PROJECTS.filter((p) =>
+    (!activeCat || p.category === activeCat) &&
+    (!q || (p.title + " " + p.desc + " " + p.tags.join(" ")).toLowerCase().includes(q))
   );
 
   $("empty").hidden = list.length > 0;
-  $("repoGrid").innerHTML = list.map((r) => `
+  $("projectGrid").innerHTML = list.map((p) => `
     <article class="card">
-      <h3>${esc(r.name)}</h3>
-      <p>${esc(r.description || "Belum ada deskripsi.")}</p>
-      ${r.topics && r.topics.length ? `<div class="topics">${r.topics.slice(0, 4).map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
-      <div class="card-foot">
-        <span>${r.language ? `<i class="lang-dot" style="background:${colorOf(r.language)}"></i>${esc(r.language)}` : "&nbsp;"}</span>
-        <span>⭐ ${r.stargazers_count} · 🍴 ${r.forks_count}</span>
-      </div>
-      <div class="card-foot"><span>Diperbarui ${fmtDate(r.pushed_at)}</span></div>
-      <div class="card-links">
-        <a href="${r.html_url}" target="_blank" rel="noopener">Kode →</a>
-        ${r.homepage ? `<a href="${esc(r.homepage.startsWith("http") ? r.homepage : "https://" + r.homepage)}" target="_blank" rel="noopener">Demo →</a>` : ""}
-      </div>
+      <div class="icon">${p.icon}</div>
+      <span class="cat">${esc(p.category)}</span>
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.desc)}</p>
+      <div class="topics">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+      ${p.link || p.demo ? `<div class="card-links">
+        ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Kode →</a>` : ""}
+        ${p.demo ? `<a href="${esc(p.demo)}" target="_blank" rel="noopener">Demo →</a>` : ""}
+      </div>` : ""}
     </article>`).join("");
 
-  // animasi muncul
-  document.querySelectorAll(".card").forEach((c, i) => setTimeout(() => c.classList.add("show"), i * 40));
+  document.querySelectorAll(".card").forEach((c, i) => setTimeout(() => c.classList.add("show"), i * 50));
 }
 
-["input", "change"].forEach((ev) => {
-  $("search").addEventListener(ev, renderRepos);
-  $("langFilter").addEventListener(ev, renderRepos);
-  $("sort").addEventListener(ev, renderRepos);
-});
+$("search").addEventListener("input", renderProjects);
 
-/* ---------- Init ---------- */
-async function init() {
-  $("year").textContent = new Date().getFullYear();
-  $("repoGrid").innerHTML = '<div class="skeleton"></div>'.repeat(3);
-
-  try {
-    const [user, data] = await Promise.all([
-      getJSON(`${API}/users/${USERNAME}`),
-      getJSON(`${API}/users/${USERNAME}/repos?per_page=100&sort=updated`)
-    ]);
-    // tampilkan hanya repo asli (bukan fork), bisa dihapus filter ini kalau mau semua
-    repos = data.filter((r) => !r.fork);
-    renderProfile(user);
-    $("statStars").textContent = repos.reduce((s, r) => s + r.stargazers_count, 0);
-    renderLanguages();
-    renderRepos();
-  } catch (err) {
-    $("name").textContent = "Oops!";
-    $("bio").textContent = err.message;
-    $("repoGrid").innerHTML = "";
-  }
-}
-init();
+renderProfile();
+renderProjects();
